@@ -32,6 +32,8 @@
 	"license": "ISC",
 	"dependencies": {
 		"@prisma/client": "^6.15.0",
+		"@temporalio/client": "^1.13.0",
+		"@temporalio/worker": "^1.13.0",
 		"dotenv": "^17.2.1",
 		"express": "^5.1.0",
 		"prisma": "^6.15.0"
