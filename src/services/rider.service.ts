@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import type { RiderRepository } from "../repositories";
+import { bookingWorkflow } from "../workflows/booking.workflows";
 
 class RiderService {
 	constructor(private riderRepository: RiderRepository) {}
@@ -43,11 +44,25 @@ class RiderService {
 	}
 
 	async createRiderBooking(req: Request, res: Response) {
+		const riderId = Number(req.params.id);
 		try {
+			const workflowId = `booking-${riderId}-${Date.now()}`;
+
+			const handle = await req.app.locals.workflowClient.start(
+				bookingWorkflow,
+				{
+					args: [],
+					taskQueue: "booking",
+					workflowId,
+				},
+			);
+
 			const data = await this.riderRepository.createRiderBooking({
-				riderId: req.params.id,
+				riderId,
+				workflowId: handle.workflowId,
 			});
-			res.json(data);
+
+			res.status(201).json({ data });
 		} catch (error) {
 			res.json({
 				message: "Error while creating booking",

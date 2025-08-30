@@ -38,11 +38,12 @@ model RiderAccount {
 }
 
 model Booking {
-  id        Int           @id @default(autoincrement())
-  rider     RiderAccount  @relation(fields: [riderId], references: [id])
-  riderId   Int
-  driver    DriverAccount? @relation(fields: [driverId], references: [id])
-  driverId  Int?
-  state    String
-  createdAt DateTime      @default(now())
+  id         Int           @id @default(autoincrement())
+  rider      RiderAccount  @relation(fields: [riderId], references: [id])
+  riderId    Int
+  driver     DriverAccount? @relation(fields: [driverId], references: [id])
+  driverId   Int?
+  state      String
+  workflowId String        @unique
+  createdAt  DateTime      @default(now())
 }

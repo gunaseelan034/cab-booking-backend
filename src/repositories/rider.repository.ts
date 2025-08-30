@@ -28,6 +28,7 @@ class RiderRepository {
 		return prisma.booking.create({
 			data: {
 				riderId: Number(data.riderId),
+				workflowId: data.workflowId,
 				state: BookingState.PENDING_APPROVAL,
 			},
 		});

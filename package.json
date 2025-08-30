@@ -10,7 +10,8 @@
 		"lint": "biome lint .",
 		"format": "biome format . --write",
 		"db:push": "prisma db push",
-		"db:generate": "prisma generate"
+		"db:generate": "prisma generate",
+		"prisma:generate": "npx prisma generate"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.2.2",
