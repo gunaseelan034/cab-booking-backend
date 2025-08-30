@@ -21,9 +21,6 @@ router.get("/drivers/:id/bookings", driverController.getDriverBookings);
 /**
  * accept booking by driver
  */
-router.post(
-	"/drivers/:id/bookings/:bookingId/actions",
-	driverController.driverBookingActions,
-);
+router.post("/drivers/:id/bookings/:bookingId/actions", driverController.driverBookingActions);
 
 export default router;

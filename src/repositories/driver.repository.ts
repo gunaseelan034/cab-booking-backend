@@ -17,14 +17,7 @@ class DriverRepository {
 	async getDriverBookings({ driverId }: { driverId: number }) {
 		return prisma.booking.findMany({ where: { driverId } });
 	}
-
-	async updateDriverBooking({
-		bookingId,
-		data,
-	}: {
-		bookingId: number;
-		data: object;
-	}) {
+	async updateDriverBooking({ bookingId, data }: { bookingId: number; data: object }) {
 		return prisma.booking.update({
 			where: { id: bookingId },
 			data,

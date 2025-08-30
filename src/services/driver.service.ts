@@ -1,9 +1,6 @@
 // biome-ignore assist/source/organizeImports: <explanation>
 import type { Request, Response } from "express";
-import {
-	type BookingRequestState,
-	DRIVER_BOOKING_STATE_MAP,
-} from "../states/booking-states";
+import { type BookingRequestState, DRIVER_BOOKING_STATE_MAP } from "../states/booking-states";
 import { DRIVER_ERRORS } from "../constants/errors";
 import type { DriverRepository } from "../repositories";
 
@@ -56,7 +53,7 @@ class DriverService {
 				message: "Error when booking action",
 				error: DRIVER_ERRORS.INVALID_ACTION_REQUEST,
 			});
-		};
+		}
 
 		const driverId = Number(req.params.id);
 
