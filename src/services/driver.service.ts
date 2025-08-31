@@ -1,8 +1,18 @@
 // biome-ignore assist/source/organizeImports: <explanation>
 import type { Request, Response } from "express";
-import { type BookingRequestState, DRIVER_BOOKING_STATE_MAP } from "../states/booking-states";
+import {
+	type BookingRequestState,
+	DRIVER_BOOKING_STATE_MAP,
+} from "../states/booking-states";
 import { DRIVER_ERRORS } from "../constants/errors";
-import type { DriverRepository } from "../repositories";
+import {
+	BookingRepository,
+	type DriverRepository,
+} from "../repositories";
+import { getWorkflowById } from "../utils/workflow";
+import { BookingWorkflowSignalTypes } from "../workflows/booking.workflows";
+
+const bookingRepository = new BookingRepository();
 
 class DriverService {
 	constructor(private driverRepository: DriverRepository) {}
@@ -21,7 +31,9 @@ class DriverService {
 
 	async createDriver(req: Request, res: Response) {
 		try {
-			const data = await this.driverRepository.create(req.body ?? {});
+			const data = await this.driverRepository.create(
+				req.body ?? {},
+			);
 			res.json(data);
 		} catch (error) {
 			res.json({
@@ -33,9 +45,10 @@ class DriverService {
 
 	async getDriverBooking(req: Request, res: Response) {
 		try {
-			const data = await this.driverRepository.getDriverBookings({
-				driverId: Number(req.params.id),
-			});
+			const data =
+				await this.driverRepository.getDriverBookings({
+					driverId: Number(req.params.id),
+				});
 			res.json({ data });
 		} catch (error) {
 			res.json({
@@ -46,7 +59,8 @@ class DriverService {
 	}
 
 	async driverBookingActions(req: Request, res: Response) {
-		const requestedState: BookingRequestState = req?.body?.requestType;
+		const requestedState: BookingRequestState =
+			req?.body?.requestType;
 
 		if (!DRIVER_BOOKING_STATE_MAP[requestedState]) {
 			res.json({
@@ -55,17 +69,38 @@ class DriverService {
 			});
 		}
 
-		const driverId = Number(req.params.id);
+		const driverId = Number(req.params.id),
+			bookingId = Number(req.params.bookingId);
 
 		try {
-			const data = await this.driverRepository.updateDriverBooking({
-				bookingId: Number(req.params.bookingId),
-				data: { state: DRIVER_BOOKING_STATE_MAP[requestedState], driverId },
-			});
+			const bookingDetails =
+				await bookingRepository.getById(bookingId);
+
+			const workflow = await getWorkflowById(
+				bookingDetails?.workflowId as string,
+			);
+
+			if (!workflow) {
+				res.json({
+					message: "Error when booking action",
+					error: DRIVER_ERRORS.INVALID_BOOKING,
+				});
+			};
+
+			workflow.signal(BookingWorkflowSignalTypes.DRIVER_ACCEPTED, driverId);
+
+			const data =
+				await this.driverRepository.updateDriverBooking({
+					bookingId,
+					data: {
+						state: DRIVER_BOOKING_STATE_MAP[requestedState],
+						driverId,
+					},
+				});
 			res.json({ data });
 		} catch (error) {
 			res.json({
-				message: "Error fetching users",
+				message: "Error when booking action",
 				error,
 			});
 		}

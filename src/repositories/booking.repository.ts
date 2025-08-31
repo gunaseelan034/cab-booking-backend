@@ -19,6 +19,12 @@ class BookingRepository {
 			},
 		});
 	}
+
+	async getById(id: number) {
+		return prisma.booking.findUnique({
+			where: { id },
+		});
+	}
 }
 
 export default BookingRepository;
