@@ -85,19 +85,35 @@ class DriverService {
 					message: "Error when booking action",
 					error: DRIVER_ERRORS.INVALID_BOOKING,
 				});
-			};
+			}
 
-			workflow.signal(BookingWorkflowSignalTypes.DRIVER_ACCEPTED, driverId);
-
-			const data =
-				await this.driverRepository.updateDriverBooking({
-					bookingId,
-					data: {
-						state: DRIVER_BOOKING_STATE_MAP[requestedState],
-						driverId,
-					},
+			workflow
+				.signal(
+					BookingWorkflowSignalTypes.DRIVER_ACCEPTED,
+					driverId,
+				)
+				.then(async () => {
+					const data =
+						await this.driverRepository.updateDriverBooking(
+							{
+								bookingId,
+								data: {
+									state:
+										DRIVER_BOOKING_STATE_MAP[
+											requestedState
+										],
+									driverId,
+								},
+							},
+						);
+					res.json({ data });
+				})
+				.catch((error) => {
+					res.json({
+						message: "Error when booking action",
+						error,
+					});
 				});
-			res.json({ data });
 		} catch (error) {
 			res.json({
 				message: "Error when booking action",

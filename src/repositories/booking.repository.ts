@@ -1,8 +1,13 @@
+import type { Request } from "express";
 import prisma from "../database/connection";
 
 class BookingRepository {
-	async getAll() {
+	async getAll(params: Request["query"]) {
 		return prisma.booking.findMany({
+			where: {
+				...params,
+				id: params?.id ? Number(params.id) : undefined,
+			},
 			include: {
 				rider: {
 					omit: { userId: true },
